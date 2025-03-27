@@ -6,10 +6,12 @@ import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Scanner;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -100,15 +102,13 @@ public class Gestor extends JFrame{
                 // Crear el archivo con el nombre del correo
                 String archivo = "src/Datos/usuarios/" + correo + ".txt";
 
-                System.out.println("Ruta actual: " + System.getProperty("user.dir"));
-                System.out.println("Nombre del archivo: " + archivo);
         
 
                 try {
                     FileWriter writer = new FileWriter(archivo, true);
+                    writer.write("---\n");
                     writer.write(titulo + "\n");
                     writer.write(texto + "\n");
-                    writer.write("------------------------\n\n");
                     writer.close();
                     JOptionPane.showMessageDialog(null, "Nota guardada correctamente en el archivo " + archivo);
                 } catch (IOException ex) {
@@ -215,40 +215,94 @@ public class Gestor extends JFrame{
     panelBotones.add(botonListar);
     panel.add(panelBotones, BorderLayout.SOUTH);
     botonListar.addActionListener(new ActionListener() {
-    @Override
-    public void actionPerformed(java.awt.event.ActionEvent e) {
-        listaNotas.setModel(modeloDeNotas); // Actualizar la lista de notas
-        JDialog dialog = new JDialog();
-        dialog.setTitle("Lista de Notas");
-        dialog.setModal(true); 
+        @Override
+        public void actionPerformed(java.awt.event.ActionEvent e) {
+            // Obtener el correo del usuario actual
+            String correo = Login.getCorreo();
+    
+            // Crear el archivo con el nombre del correo
+            String archivo = "src/Datos/usuarios/" + correo + ".txt";
 
-        JScrollPane scrollPane = new JScrollPane(listaNotas);
-        dialog.getContentPane().add(scrollPane, BorderLayout.CENTER);
-        dialog.setSize(500, 300);
-        dialog.setLocationRelativeTo(null);
-
-        listaNotas.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                Nota nota = listaNotas.getSelectedValue();
-                if (nota != null) {
-                    JTextArea textoNota = new JTextArea(nota.getTexto());
-                    textoNota.setEditable(false);
-                    JDialog ventanaNota = new JDialog();
-                    ventanaNota.setSize(800, 300);
-                    ventanaNota.setTitle(nota.getTitulo());
-                    ventanaNota.setModal(true);
-                    ventanaNota.add(new JScrollPane(textoNota));
-                    ventanaNota.pack();
-                    ventanaNota.setLocationRelativeTo(null);
-                    ventanaNota.setVisible(true);
+            // Crear un modelo de lista para almacenar las notas
+            DefaultListModel<Nota> modeloDeNotas = new DefaultListModel<>();
+    
+            try {
+                // Leer el archivo de texto
+                File file = new File(archivo);
+                Scanner scanner = new Scanner(file);
+    
+                // Crear un modelo de lista para almacenar los títulos
+                DefaultListModel<String> modeloDeTitulos = new DefaultListModel<>();
+    
+                // Leer las notas del archivo
+                String titulo = "";
+                String contenido = "";
+                boolean esTitulo = true;
+                while (scanner.hasNextLine()) {
+                    String linea = scanner.nextLine();
+                    if (linea.equals("---")) {
+                        // Añadir el título a la lista
+                        modeloDeTitulos.addElement(titulo);
+                        titulo = "";
+                        contenido = "";
+                        esTitulo = true;
+                    } else if (esTitulo) {
+                        titulo = linea;
+                        esTitulo = false;
+                    }else {
+                        contenido += linea + "\n";
+                    }
                 }
+                // Recoger la última nota
+                if (!titulo.isEmpty()) {
+                    modeloDeTitulos.addElement(titulo);
+                }
+                scanner.close();
+    
+                // Crear una nueva ventana con la lista de títulos
+                JFrame ventanaNotas = new JFrame("Notas de " + correo);
+                ventanaNotas.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                ventanaNotas.setSize(600, 400);
+                ventanaNotas.setLocationRelativeTo(null); 
+    
+                // Crear una lista con los títulos
+                JList<String> listaTitulos = new JList<>(modeloDeTitulos);
+                listaTitulos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    
+                // Agregar un ListSelectionListener a la lista de títulos
+                // Agregar un MouseListener a la lista de notas
+                listaNotas.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        int indice = listaNotas.locationToIndex(e.getPoint());
+                        if (indice != -1) {
+                            Nota nota = (Nota) listaNotas.getModel().getElementAt(indice);
+                            String titulo = nota.getTitulo();
+                            // Buscar el contenido correspondiente en el archivo .txt
+                            String contenido = buscarContenido(titulo);
+                            // Mostrar el contenido de la nota en una ventana nueva
+                            JFrame ventanaContenido = new JFrame("Contenido de la nota");
+                            ventanaContenido.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                            ventanaContenido.setSize(400, 300);
+                            ventanaContenido.setLocationRelativeTo(null);
+                            JTextArea textoContenido = new JTextArea(contenido);
+                            textoContenido.setEditable(false);
+                            ventanaContenido.add(new JScrollPane(textoContenido));
+                            ventanaContenido.setVisible(true);
+                        }
+                    }
+                });
+    
+                // Agregar la lista a la ventana
+                ventanaNotas.add(new JScrollPane(listaTitulos));
+    
+                // Mostrar la ventana
+                ventanaNotas.setVisible(true);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "Error al leer el archivo " + archivo);
             }
-        });
-
-        dialog.setVisible(true);
-    }
-});
+        }
+    });
 
         // Crear el boton de limpiar campo de texto
         JButton botonLimpiar = new JButton("Limpiar campo de texto");
@@ -261,6 +315,8 @@ public class Gestor extends JFrame{
                 campoTitulo.setText("");
             }
         });
+
+
 
         // Crear el boton de buscar nota
         JButton botonBuscar = new JButton("Buscar nota");
@@ -506,4 +562,31 @@ public class Gestor extends JFrame{
         }
         return null;
     }
+
+    // Método para buscar el contenido correspondiente en el archivo .txt
+// Método para buscar el contenido correspondiente en el archivo .txt
+private static String buscarContenido(String titulo) {
+    String correo = Login.getCorreo();
+    String archivo = "src/Datos/usuarios/" + correo + ".txt";
+    try {
+        File file = new File(archivo);
+        Scanner scanner = new Scanner(file);
+        boolean encontrado = false;
+        String contenido = "";
+        while (scanner.hasNextLine()) {
+            String linea = scanner.nextLine();
+            if (linea.equals(titulo)) {
+                encontrado = true;
+            } else if (encontrado && !linea.equals("---")) {
+                contenido += linea + "\n";
+            } else if (encontrado && linea.equals("---")) {
+                break;
+            }
+        }
+        scanner.close();
+        return contenido.trim(); // Eliminar espacios en blanco al final
+    } catch (IOException ex) {
+        return "Error al leer el archivo";
+    }
+}
 }
