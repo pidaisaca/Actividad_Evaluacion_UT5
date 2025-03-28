@@ -10,7 +10,11 @@ Extender la aplicación Creador de Notas Interactivo para que los usuarios pueda
 
 # Estructura de carpetas
 
+```
+prueba
 
+
+```
 
 # Pruebas de funcionamiento
 
