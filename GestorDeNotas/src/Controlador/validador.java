@@ -8,11 +8,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+
 public class validador {
 
     private static final String USERS_FILE = Paths.get("src/Datos", "usuarios.txt").toAbsolutePath().toString();
     // End of variables declaration//GEN-END:variables
 
+    // Metodo para iniciar sesion, si el correo y la contraseña son correctos
     public static boolean iniciarSesion(String email, String contraseña) {
         String hashedPassword = hashPassword(contraseña);
         try {
@@ -30,6 +32,7 @@ public class validador {
         return false;
     }
 
+    // Metodo para encriptar la contraseña
     public static String hashPassword(String contraseña) {
 
         try {

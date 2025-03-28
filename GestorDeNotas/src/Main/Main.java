@@ -17,6 +17,9 @@ import Vista.CreadorUsuario;
  *
  * @author Daniel Ramos Montoya
  */
+
+
+ // Llamada al metodo main, para iniciar el programa
 public class Main {
 
     public static void main(String[] args) {

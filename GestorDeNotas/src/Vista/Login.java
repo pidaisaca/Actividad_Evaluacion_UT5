@@ -182,6 +182,7 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
 
+    // 
     private void registroNuevoActionPerformed(java.awt.event.ActionEvent evt) {
             CreadorUsuario creadorUsuario = new CreadorUsuario();
             creadorUsuario.setVisible(true); 
@@ -237,6 +238,7 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JButton registroNuevo;
     // End of variables declaration//GEN-END:variables
 
+    // Metodo para recuperar el correo
     public static String getCorreo() {
         String correo = areaUsuario.getText();
         if (correo.isEmpty()) {
@@ -246,10 +248,12 @@ public class Login extends javax.swing.JFrame {
         return correo;
     }
 
+    // Metodo para una vez se cierre la ventana del gestor, el usuario se vacia
     public static void setUsuario() {
         areaUsuario.setText("");
     }
 
+    // Metodo para una vez se cierre la ventana del gestor, la contraseña se vacia
     public static void setContrasenna() {
         areaContrasenna.setText("");
     }

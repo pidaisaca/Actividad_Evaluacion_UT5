@@ -183,7 +183,6 @@ public class CreadorUsuario extends javax.swing.JFrame {
 
     private void registrarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {
         
-        comprobarCampos();
         registrarUsuario();
         crearArchivoUsuario();
         
@@ -237,34 +236,48 @@ public class CreadorUsuario extends javax.swing.JFrame {
     private javax.swing.JButton registrarUsuario;
     // End of variables declaration//GEN-END:variables
 
-
-    public void comprobarCampos() {
+    // Metodo para comprobar que los campos no esten vacios y tengan el formato adecuado
+    public boolean comprobarCampos() {
     String usuario = jTextArea1.getText();
     String correo = jTextArea2.getText();
     String contraseña = jTextArea3.getText();
 
+    if (usuario.isEmpty() || correo.isEmpty() || contraseña.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Todos los campos deben estar llenos");
+        return false;
+    }
+
     if (usuario.isEmpty()) {
         JOptionPane.showMessageDialog(this, "El campo de usuario no puede estar vacío");
-        return;
+        return false;
     }
 
     if (!correo.contains("@") || !correo.contains(".")) {
         JOptionPane.showMessageDialog(this, "El correo no tiene un formato apropiado");
-        return;
+        return false;
     }
 
     if (contraseña.length() < 3) {
         JOptionPane.showMessageDialog(this, "La contraseña debe tener al menos 3 caracteres");
-        return;
+        return false;
     }
+    
+    return true;
+
     }
 
+    // Metodo para registrar el usuario, si los campos son correctos
     public void registrarUsuario() {
+
+        if (!comprobarCampos()) {
+            return;
+        }
         
         String correo = jTextArea2.getText();
         String contraseña = jTextArea3.getText();
 
         Controlador.validador validador = new Controlador.validador();
+
 
 
         try {
@@ -281,9 +294,13 @@ public class CreadorUsuario extends javax.swing.JFrame {
         }
     }
 
-
+    // Metodo para crear el archivo del usuario, usando su correo
     public void crearArchivoUsuario() {
 
+        if (!comprobarCampos()) {
+            return;
+        }
+        
         String directorio = "src/Datos/usuarios";
         String archivo_nuevo = jTextArea2.getText();
 
