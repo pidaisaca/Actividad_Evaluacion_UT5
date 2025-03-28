@@ -13,7 +13,7 @@ Extender la aplicación Creador de Notas Interactivo para que los usuarios pueda
 ```
 prueba
 
-
+![alt text](imagenes/image.png)
 ```
 
 # Pruebas de funcionamiento
