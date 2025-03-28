@@ -56,7 +56,7 @@ Pantalla de registro de usuario
 
 Pantalla de gestor actualizada
 
-![alt text](imag/gestor)
+![alt text](imag/gestor.png)
 
 
 # Pruebas de funcionamiento
