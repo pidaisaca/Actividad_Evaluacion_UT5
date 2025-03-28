@@ -1,9 +1,0 @@
----
-a
-aaaaa
----
-b
-bbbbbb
----
-c
-ccccc
