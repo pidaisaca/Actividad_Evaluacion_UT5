@@ -10,11 +10,10 @@ Extender la aplicación Creador de Notas Interactivo para que los usuarios pueda
 
 # Estructura de carpetas
 
-```
 prueba
 
-![alt text](imagenes/image.png)
-```
+![Image](https://github.com/user-attachments/assets/ed77fb83-2525-4409-ba8e-ff99e87977e5)
+
 
 # Pruebas de funcionamiento
 
